@@ -40,10 +40,14 @@
 			localStorage.setItem('theme', $theme);
 		}
 	});
+
+	const hiddenPaths = [Routes.LOGIN, Routes.SIGN_UP] as const;
+
+	type HiddenRoute = (typeof hiddenPaths)[number];
 </script>
 
 <div class="bg-background text-foreground min-h-screen">
-	{#if page.url.pathname !== Routes.LOGIN}
+	{#if !hiddenPaths.includes(page.url.pathname as HiddenRoute)}
 		<Nav />
 	{/if}
 	<div class="p-6">
