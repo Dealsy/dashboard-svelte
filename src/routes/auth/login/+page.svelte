@@ -3,6 +3,7 @@
 	import Input from '$lib/components/input.svelte';
 	import { LoginAPI, Routes } from '$lib/constants';
 	import { z } from 'zod';
+	import { auth } from '$lib/stores/auth';
 
 	const loginSchema = z.object({
 		email: z.string().email(),
@@ -34,25 +35,36 @@
 			mode: 'cors'
 		});
 
+		// Log response headers
+		console.log(
+			'Response Headers:',
+			Object.fromEntries(response.headers.entries())
+		);
+
 		if (!response.ok) {
 			const errorData = await response.json();
 			throw new Error(errorData.message || 'Login failed');
 		}
 
-		const data = await response.json();
+		const tokens = await response.json();
+		console.log('Tokens:', tokens);
 
-		// TODO: Save token to cookies
+		// Set cookies from the API response
+		document.cookie = `accessToken=${tokens.access_token}; path=/; max-age=900`; // 15 minutes
+		document.cookie = `refreshToken=${tokens.refresh_token}; path=/; max-age=604800`; // 7 days
+
+		// Update auth state with tokens
+		auth.setTokens(tokens);
 
 		const result = loginSchema.safeParse({ email, password });
 
 		if (!result.success) {
 			errors.email = result.error.flatten().fieldErrors.email ?? null;
 			errors.password = result.error.flatten().fieldErrors.password ?? null;
+			return;
 		}
 
-		if (result.success) {
-			goto(Routes.HOME);
-		}
+		goto(Routes.HOME);
 	};
 </script>
 

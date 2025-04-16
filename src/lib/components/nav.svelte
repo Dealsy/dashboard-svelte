@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ThemeToggle from './ThemeToggle.svelte';
 	import { Routes } from '$lib/constants';
+	import Logout from './logout.svelte';
 </script>
 
 <nav
@@ -10,14 +11,9 @@
 		<li>
 			<a href={Routes.HOME}>Home</a>
 		</li>
-		<li>
-			<a href={Routes.ABOUT}>About</a>
-		</li>
-		<li>
-			<a href={Routes.LOGIN}>Login</a>
-		</li>
 	</ul>
-	<div class="flex justify-end p-4">
+	<div class="flex justify-end gap-2 p-4">
 		<ThemeToggle />
+		<Logout />
 	</div>
 </nav>
